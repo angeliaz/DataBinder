@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Jquery Ng</title>
+	<script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/1.8.0/jquery.min.js"></script>
+	<script type="text/javascript">
+		function DataBinder( object_id ) {
+			// Use a jQuery object as simple PubSub
+			var pubSub = jQuery({});
+			 
+			// We expect a `data` element specifying the binding
+			// in the form: data-bind-<object_id>="<property_name>"
+			var data_attr = "bind-" + object_id, // bind-123
+			message = object_id + ":change"; // 123: change
+			 
+			// Listen to change events on elements with the data-binding attribute and proxy
+			// them to the PubSub, so that the change is "broadcasted" to all connected objects
+			jQuery(document).on( "change", "[data-" + data_attr + "]", function( evt ) {
+				var $input = jQuery( this );
+				pubSub.trigger( message, [ $input.data( data_attr ), $input.val() ] );
+			});
+			 
+			// PubSub propagates changes to all bound elements, setting value of
+			// input tags or HTML content of other tags
+			pubSub.on(message, function( evt, prop_name, new_val ) {
+				jQuery( "[data-" + data_attr + "=" + prop_name + "]" ).each( function() {
+					var $bound = jQuery( this );
+					 
+					if ( $bound.is("input, textarea, select") ) {
+						$bound.val( new_val );
+						} else {
+						$bound.html( new_val );
+						}
+					}
+				);
+			});
+
+
+			return pubSub;
+		}
+
+		function User( uid ) {
+			var binder = new DataBinder( uid ),
+			 
+			user = {
+				attributes: {},
+				 
+				// The attribute setter publish changes using the DataBinder PubSub
+				set: function( attr_name, val ) {
+					this.attributes[ attr_name ] = val;
+					binder.trigger( uid + ":change", [ attr_name, val, this ] );
+				},
+				 
+				get: function( attr_name ) {
+					return this.attributes[ attr_name ];
+				},
+				 
+				_binder: binder
+			};
+			console.log(binder)
+			 
+			// Subscribe to the PubSub
+			binder.on( uid + ":change", function( evt, attr_name, new_val, initiator ) {
+				if ( initiator !== user ) {
+					user.set( attr_name, new_val );
+				}
+			});
+			 
+			return user;
+		}
+		
+		function Binder(uid) {
+
+			var pub = jQuery({});
+
+			var data-attr =  'bind' + uid;
+			var msg = uid + ':change';
+
+			jQuery(document).on('cahnge', '[data-' + data-attr + ']', function(event) {
+				var $input = jQuery(this);
+				pub.trigger(msg, [$input.data(data-attr), $input.val()]);
+			} );
+
+			pub.on(msg, function(event, prop_name, value) {
+
+				jQuery('[data-' + data-attr + '=' + prop_name + ']').each(function() {
+					var $item = jQuery(this);
+
+					if(item.is('select input textarea')) {
+						$item.val(value);
+					} else {
+						$item.text(value);
+					}
+				});
+
+			})
+
+			return pub;
+
+		}
+
+		function User(uid) {
+
+			var bind = new Binder(uid);
+
+			var user = {
+
+				attributes: {},
+
+				set: function(attr-name, value) {
+					this.attributes[] = 
+					bind.trigger(uid + ':change', [attr-name, val, this]);
+				},
+
+				get: function() {
+					return this.attributes[]
+				}
+			};
+
+			bind.on(uid + ':change', function(event, attr-name, value, initiator) {
+				if(initiator != user) {
+					user.set()
+				}
+			})
+		}
+
+	</script>
+</head>
+<body>
+	<input type="number" data-bind-123="name" />
+	<input type="number" data-bind-123="name" />
+	<input type="number" data-bind-123="name" />
+	<input type="number" data-bind-123="name" />
+	<span data-bind-123="name"></span>
+	<script type="text/javascript">
+		var user = new User( 123 );
+		user.set( "name", "345" );
+		n = 0 ;
+		setInterval(function() {
+			
+			
+			user.set( "name",n)
+			n ++
+			console.log(user.get('name'));
+		}, 1000)
+	</script>
+
+
+
+</body>
+</html>
