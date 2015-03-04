@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>DefineProperty Demo</title>
+</head>
+<body>
+	<p class="text">text</p>
+	<input type="text" value="" class="textInput">
+	
+	<script type="text/javascript">
+
+		var str = '';
+		var person = {
+			name: 'angeila',
+			age: 18
+		};
+		var textInput = document.getElementsByClassName('textInput')[0];
+
+		Object.defineProperty(person, 'age', {value: 24});
+		Object.defineProperty(person, 'location', {value: 'beijing'});
+
+		console.log(person)
+
+		// 可枚举的属性
+		Object.defineProperty(person, 'location1', {
+			value: 'beijing1',
+			enumerable: false
+		});
+
+		for(var key in person) {
+			console.log(person[key])
+		}
+
+		console.dir(person);
+
+		// 通过Object.defineProperty可以自定义属性的getter和setter
+		Object.defineProperty(person, 'house', {
+			get: function() {
+				console.log('you get me.');
+				return str + ' get ';
+			},
+			set: function(newValue) {
+				str = newValue + ' set ';
+				console.log('you set me.')
+			}
+		});
+
+		person.house = 'yes';
+		console.log(person.house);
+
+		// 模拟双向绑定
+		Object.defineProperty(person, 'car', {
+			get: function() {
+				// console.log('you get me.');
+				// return str + ' get ';
+			},
+			set: function(newValue) {
+				// str = newValue + ' set ';
+				// console.log('you set me.')
+				document.getElementsByClassName('text')[0].innerHTML = newValue;
+			}
+		});
+
+
+		textInput.onchange = function() {
+			person.car = textInput.value;
+		};
+
+		// Object.defineProperty是ECS5属性，所以IE8以下无效。
+		// 所以得找一种兼容性方案
+
+	</script>
+
+</body>
+</html>
