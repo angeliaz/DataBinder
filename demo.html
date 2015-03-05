@@ -45,7 +45,8 @@
 			}
 		});
 
-		person.house = 'yes';
+		person.house = 'yes'; 
+
 		console.log(person.house);
 
 		// 模拟双向绑定
@@ -66,8 +67,27 @@
 			person.car = textInput.value;
 		};
 
-		// Object.defineProperty是ECS5属性，所以IE8以下无效。
-		// 所以得找一种兼容性方案
+		// Object.defineProperty是ECS5方法，所以IE8以下无效。
+		// 所以得找一种兼容性方案：VBScript
+		// 不懂VBScript，没弄懂怎么实现的。。
+
+
+		// ES6的Proxy也有类似功能：监听对象身上发生了什么事，并做相应处理
+		// 被监听的对象
+		var coder = {
+			name: 'Angelia',
+			age: 18
+		};
+
+		var interceptor = {
+			set: function(receiver, property, value) {
+				console.log(proper, ' is changed to ', value);
+				receiver[property] = value;
+			}
+		};
+
+		coder = Proxy(coder, interceptor); // 由于浏览器基本没实现,所以这里会报错
+		coder.age = 24;
 
 	</script>
 
